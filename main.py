@@ -86,12 +86,13 @@ if __name__ == "__main__":
 
     #t = bitstring.BitArray(bin=xmit).tobytes()
     print(xmit)
-    bytes = binstr_to_bytestr(xmit)
-    print(bytes)
+    #bytes = binstr_to_bytestr(xmit)
+    #byte_array = bytearray(bytes)
+    byte_array = bitstring.BitArray(bin=xmit).tobytes()
 
     for i in range(0,10):
         #d.RFxmit(bytes, repeat=10)
-        print(xmit)
+        print(byte_array)
         time.sleep(10)
 
     #d.setModeIDLE()
