@@ -52,47 +52,55 @@ def binstr_to_bytestr(bin):
             c += 2 ** i
         i-=1
         if i == -1:
-            bytes.append(c)
+            bytes.append(c.to_bytes(1, "little"))
             i = 7
             c = 0
 
     return bytes
 
-if __name__ == "__main__":
+def setup(d):
+
+    #d = rflib.RfCat()
+
+    #Set Modulation. We using On-Off Keying here
+    d.setMdmModulation(rflib.MOD_ASK_OOK)
+    d.makePktFLEN(50)    # Set the RFData packet length
+    d.setMdmDRate(2000)  # Set the Baud Rate
+    d.setMdmSyncMode(0)  # Disable preamble
+    d.setFreq(433923000) # Set the frequency
+    d.setMaxPower()
+
+def send(d):
     PULSE_US = 500
     PULSE_START = 4000
     PULSE_LOW = 1000
     PULSE_HIGH = 2000
-
-    # d = rflib.RfCat()
-
-    # # Set Modulation. We using On-Off Keying here
-    # d.setMdmModulation(rflib.MOD_ASK_OOK)
-    # d.setMaxPower()
-    # d.makePktFLEN(12)    # Set the RFData packet length
-    # d.setMdmDRate(1/PULSE_US)  # Set the Baud Rate
-    # d.setMdmSyncMode(0)  # Disable preamble
-    # d.setFreq(433920000) # Set the frequency
 
     # 9b is the id (155)
     # 8 is batter okay 00 is battery empty
     # 068 is the temperature (12 bits the result is divided by 10 by the weather station to get the decimal)
     # f is a control nibble
     # 4 8 is the himidity (48%)
-    if len(sys.argv) > 1:
-        xmit =  hex_to_transmit_bitstring(sys.argv[1], PULSE_US, PULSE_START, PULSE_LOW, PULSE_HIGH)
-    else:
-        xmit = hex_to_transmit_bitstring("9b 80 68 f4 8", PULSE_US, PULSE_START, PULSE_LOW, PULSE_HIGH)
-
+    #if len(sys.argv) > 1:
+    #    xmit =  hex_to_transmit_bitstring(sys.argv[1], PULSE_US, PULSE_START, PULSE_LOW, PULSE_HIGH)
+    #else:
+    #ec 80 85 f5 10
+    xmit = hex_to_transmit_bitstring("ec 0f 68 f6 80", PULSE_US, PULSE_START, PULSE_LOW, PULSE_HIGH)
+    xmit = hex_to_transmit_bitstring("9b 0f 68 f6 80", PULSE_US, PULSE_START, PULSE_LOW, PULSE_HIGH)
+    
     #t = bitstring.BitArray(bin=xmit).tobytes()
     print(xmit)
-    #bytes = binstr_to_bytestr(xmit)
+    byte_array = binstr_to_bytestr(xmit)
     #byte_array = bytearray(bytes)
-    byte_array = bitstring.BitArray(bin=xmit).tobytes()
-
-    for i in range(0,10):
-        #d.RFxmit(bytes, repeat=10)
-        print(byte_array)
-        time.sleep(10)
-
-    #d.setModeIDLE()
+    print(byte_array)
+    
+   
+    for i in range(0,15):    
+        try:
+            print(b"".join(byte_array))
+            d.RFxmit(b"".join(byte_array))
+            time.sleep(1/1000)
+        except:
+            print("err")
+            pass
+    
