@@ -1,23 +1,6 @@
 
 #define TX_PIN 2
-/*
- you connect an RF433 module to VCC (preferably it's own power supply with 12V to increase range)
- you connect the ground to the ground
- you connect the data of the module to TX_PIN (in this case 2)
 
- Now you need to hope you have a xmit module that has coils or better a trimmer pot to move to the
- 433.920MHz mine did not and then it becomes hit or miss to spoof the Nexus Weather Station
-
- Now send a hex data string into the serial console such as: 
-    ec 0f 68 f6 8 
-    9b 80 68 f4 8
-
-    # 9b is the id (155) of your station -- you'll need to find that out or just brute force generate 255 of then :D
-    # 8 is batter okay 00 is battery empty
-    # 0 68 is the temperature (12 bits the result is divided by 10 by the weather station to get the decimal)
-    # f is a control nibble
-    # 4 8 is the himidity (48%)
-*/
 void setup(){
   pinMode(TX_PIN, OUTPUT);
   digitalWrite(TX_PIN, LOW);
@@ -56,15 +39,17 @@ void send_ook_tlow(String *cmd, int pulse_us, int pre_send_us, int low_bit_us, i
   }
 }
 
-
 void loop(){
-  static String cmd="";
+  static String cmd="9b 0f 68 f6 8";
   
   if (Serial.available()>0) {
     cmd = Serial.readString();  
   }
   
-  delay(10000);
+  delay(1000);
   
-  for (int i=0; i<10;i++) send_ook_tlow(&cmd, 500, 4000, 1000, 2000);
+  for (int i=0; i<10;i++) {
+    send_ook_tlow(&cmd, 500, 4000, 1000, 2000);
+    delay(1);
+  }
 }
