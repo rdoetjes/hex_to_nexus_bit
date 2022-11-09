@@ -36,6 +36,7 @@ def hex_to_transmit_bitstring(hex, pulse_us, start_us, low_us, high_us):
             continue
 
         bits = format(char_to_int(chr), '04b')
+        print(bits)
         for bit in bits:
             if bit == "1": 
                 result += high_bit_sequence
@@ -64,7 +65,7 @@ def setup(d):
 
     #Set Modulation. We using On-Off Keying here
     d.setMdmModulation(rflib.MOD_ASK_OOK)
-    d.makePktFLEN(50)    # Set the RFData packet length
+    d.makePktFLEN(9)    # Set the RFData packet length
     d.setMdmDRate(2000)  # Set the Baud Rate
     d.setMdmSyncMode(0)  # Disable preamble
     d.setFreq(433923000) # Set the frequency
@@ -85,22 +86,25 @@ def send(d):
     #    xmit =  hex_to_transmit_bitstring(sys.argv[1], PULSE_US, PULSE_START, PULSE_LOW, PULSE_HIGH)
     #else:
     #ec 80 85 f5 10
-    xmit = hex_to_transmit_bitstring("ec 0f 68 f6 80", PULSE_US, PULSE_START, PULSE_LOW, PULSE_HIGH)
-    xmit = hex_to_transmit_bitstring("9b 0f 68 f6 80", PULSE_US, PULSE_START, PULSE_LOW, PULSE_HIGH)
-    
-    #t = bitstring.BitArray(bin=xmit).tobytes()
+    #9b 0f 68 f6 80
+    #xmit = hex_to_transmit_bitstring("ec 0f 68 f6 80", PULSE_US, PULSE_START, PULSE_LOW, PULSE_HIGH)
+    xmit = hex_to_transmit_bitstring("9b 0f 68 f6 80", PULSE_US, PULSE_START, PULSE_LOW, PULSE_HIGH)    
     print(xmit)
     byte_array = binstr_to_bytestr(xmit)
-    #byte_array = bytearray(bytes)
     print(byte_array)
-    
+    to_send = b"".join(byte_array)
    
-    for i in range(0,15):    
+    for i in range(0,10):    
         try:
-            print(b"".join(byte_array))
-            d.RFxmit(b"".join(byte_array))
-            time.sleep(1/1000)
+            print(to_send)
+            d.RFxmit(to_send)
+            time.sleep(1/500)
         except:
             print("err")
             pass
-    
+
+d = rflib.RfCat()
+setup(d)
+send(d)
+d.setModeIDLE()
+

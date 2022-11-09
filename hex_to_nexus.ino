@@ -8,7 +8,9 @@
  Now you need to hope you have a xmit module that has coils or better a trimmer pot to move to the
  433.920MHz mine did not and then it becomes hit or miss to spoof the Nexus Weather Station
 
- Now send a hex data string into the serial console such as: 9b 80 68 f4 80
+ Now send a hex data string into the serial console such as: 
+    ec 0f 68 f6 8 
+    9b 80 68 f4 8
 
     # 9b is the id (155) of your station -- you'll need to find that out or just brute force generate 255 of then :D
     # 8 is batter okay 00 is battery empty
