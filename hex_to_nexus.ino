@@ -61,7 +61,8 @@ void loop(){
   //this is the command I send for device id 155, battery is low temperature is -15.5 and the hunidity 105% :D
   static String cmd="9b 0f 68 f6 8";
   
-  //if there's serial data in the buffer read it and put it into the command string (this could be a potential heap overflow -- but hey we are hacking a weather station! ) 
+  //if there's serial data in the buffer read it and put it into the command string
+  //There's no heap overflow here because the serial RX buffer is at default only 64 bytes
   if (Serial.available()>0) {
     cmd = Serial.readString();  
   }
